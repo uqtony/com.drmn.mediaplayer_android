@@ -18,7 +18,7 @@ dependencies {
     implementation(name: 'exoplayer-dash', ext:'aar')
     implementation(name: 'exoplayer', ext:'aar')
     implementation(name: 'exoplayer-decoder', ext:'aar')
-
+    implementation 'me.pushy:sdk:1.0.110'
 }
 
 android {
