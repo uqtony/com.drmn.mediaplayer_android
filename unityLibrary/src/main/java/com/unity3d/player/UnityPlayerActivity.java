@@ -5,15 +5,23 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.os.Process;
+import android.widget.Toast;
+
+import com.drmn.mediaplayer.pushy.PushReceiver;
+import com.drmn.mediaplayer.pushy.RegisterForPushNotificationsAsync;
+
+import me.pushy.sdk.Pushy;
 
 public class UnityPlayerActivity extends Activity implements IUnityPlayerLifecycleEvents
 {
+    public static UnityPlayerActivity inst;
     protected UnityPlayer mUnityPlayer; // don't change the name of this variable; referenced from native code
 
     // Override this in your custom UnityPlayerActivity to tweak the command line arguments passed to the Unity Android Player
@@ -28,11 +36,31 @@ public class UnityPlayerActivity extends Activity implements IUnityPlayerLifecyc
         return cmdLine;
     }
 
+    protected void startPushy(){
+        if (!Pushy.isRegistered(this)){
+            new RegisterForPushNotificationsAsync(this).execute();
+        }else {
+            Log.d("Pushy", "Already register!!");
+        }
+    }
+    public void onPushyMessage(String message){
+        Log.d("Pushy", "Receive message="+message);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(UnityPlayerActivity.this, message, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
     // Setup activity layout
     @Override protected void onCreate(Bundle savedInstanceState)
     {
+        UnityPlayerActivity.inst = this;
+        startPushy();
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
+        Pushy.listen(this);
 
         String cmdLine = updateUnityCommandLineArguments(getIntent().getStringExtra("unity"));
         getIntent().putExtra("unity", cmdLine);
