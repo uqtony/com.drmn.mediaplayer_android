@@ -37,11 +37,7 @@ public class UnityPlayerActivity extends Activity implements IUnityPlayerLifecyc
     }
 
     protected void startPushy(){
-        if (!Pushy.isRegistered(this)){
-            new RegisterForPushNotificationsAsync(this).execute();
-        }else {
-            Log.d("Pushy", "Already register!!");
-        }
+        new RegisterForPushNotificationsAsync(this).execute();
     }
     public void onPushyMessage(String message){
         Log.d("Pushy", "Receive message="+message);
